@@ -231,16 +231,16 @@ module e203_exu_alu_dpath(
      // Only the MULDIV request ALU-adder with 35bits operand with sign extended 
      // already, all other unit request ALU-adder with 32bits opereand without sign extended
      //   For non-MULDIV operands
-  wire op_unsigned = op_sltu | op_cmp_ltu | op_cmp_gtu | op_maxu | op_minu;
+  wire op_unsigned = op_sltu | op_cmp_ltu | op_cmp_gtu | op_maxu | op_minu;      //这些操作用无符号数 这里是对操作数进行预处理无符号的也变为35位
   wire [`E203_ALU_ADDER_WIDTH-1:0] misc_adder_op1 =
-      {{`E203_ALU_ADDER_WIDTH-`E203_XLEN{(~op_unsigned) & misc_op1[`E203_XLEN-1]}},misc_op1};
+      {{`E203_ALU_ADDER_WIDTH-`E203_XLEN{(~op_unsigned) & misc_op1[`E203_XLEN-1]}},misc_op1}; //当无符号操作的时候也进行扩展 扩展到35位 两个操作数都这样处理
   wire [`E203_ALU_ADDER_WIDTH-1:0] misc_adder_op2 =
       {{`E203_ALU_ADDER_WIDTH-`E203_XLEN{(~op_unsigned) & misc_op2[`E203_XLEN-1]}},misc_op2};
 
 
-  wire [`E203_ALU_ADDER_WIDTH-1:0] adder_op1 = 
+  wire [`E203_ALU_ADDER_WIDTH-1:0] adder_op1 =     //这是最后的加法操作数
 `ifdef E203_SUPPORT_SHARE_MULDIV //{
-      muldiv_req_alu ? muldiv_req_alu_op1 :
+      muldiv_req_alu ? muldiv_req_alu_op1 :        //如果是muldiv的话就用muldiv的操作数就直接35位有符号不用在扩展了
 `endif//E203_SUPPORT_SHARE_MULDIV}
       misc_adder_op1;
   wire [`E203_ALU_ADDER_WIDTH-1:0] adder_op2 = 
@@ -277,7 +277,7 @@ module e203_exu_alu_dpath(
                 op_slt | op_sltu 
                ));
 
-  wire adder_addsub = adder_add | adder_sub; 
+  wire adder_addsub = adder_add | adder_sub;   //减法也有这个执行这里做个判断
   
 
      // Make sure to use logic-gating to gateoff the 
@@ -285,7 +285,7 @@ module e203_exu_alu_dpath(
   assign adder_in2 = {`E203_ALU_ADDER_WIDTH{adder_addsub}} & (adder_sub ? (~adder_op2) : adder_op2);
   assign adder_cin = adder_addsub & adder_sub;
 
-  assign adder_res = adder_in1 + adder_in2 + adder_cin;
+  assign adder_res = adder_in1 + adder_in2 + adder_cin;//？这里没看懂哎
 
 
 
