@@ -36,8 +36,8 @@ module e203_exu_alu_muldiv(
   //////////////////////////////////////////////////////////////
   // The Issue Handshake Interface to MULDIV 
   //
-  input  muldiv_i_valid, // Handshake valid
-  output muldiv_i_ready, // Handshake ready
+  input  muldiv_i_valid, // Handshake valid       //32位乘法器，64位除法器
+  output muldiv_i_ready, // Handshake ready  
 
   input  [`E203_XLEN-1:0] muldiv_i_rs1,
   input  [`E203_XLEN-1:0] muldiv_i_rs2,
